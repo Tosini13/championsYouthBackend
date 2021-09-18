@@ -12,7 +12,7 @@ import { tournamentsMock } from "../mock/tournaments";
 import { GroupType } from "./group";
 import { MatchType } from "./match";
 import { TeamType } from "./team";
-import { TournamentType } from "./tournament";
+import { GetTournamentsType, GetTournamentType } from "./tournament";
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
@@ -23,8 +23,14 @@ const RootQuery = new GraphQLObjectType({
         return "Welcome to GQL";
       },
     },
-    tournament: {
-      type: TournamentType,
+    GetTournaments: {
+      type: GetTournamentsType,
+      resolve(_parent, _args) {
+        return tournamentsMock;
+      },
+    },
+    GetTournament: {
+      type: GetTournamentType,
       args: { id: { type: GraphQLID } },
       resolve(_parent, args) {
         return _.find(tournamentsMock, { id: args.id });

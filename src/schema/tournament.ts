@@ -9,8 +9,9 @@ import { GroupType } from "./group";
 import _ from "lodash";
 import { groupsMock } from "../mock/groups";
 import { TTournament } from "../models/tournament";
+import { tournamentsMock } from "../mock/tournaments";
 
-export const TournamentType = new GraphQLObjectType({
+export const GetTournamentType = new GraphQLObjectType({
   name: "Tournament",
   fields: () => ({
     id: { type: GraphQLID },
@@ -21,6 +22,20 @@ export const TournamentType = new GraphQLObjectType({
         return groupsMock.filter((group) =>
           parent.groupsId?.includes(group.id)
         );
+      },
+    },
+  }),
+});
+
+export const GetTournamentsType = new GraphQLObjectType({
+  name: "GetTournaments",
+  fields: () => ({
+    tournaments: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GetTournamentType))
+      ),
+      resolve(_parent, _args) {
+        return tournamentsMock;
       },
     },
   }),
