@@ -1,5 +1,12 @@
+import { Id } from "./global";
+
 export type TTournament = {
-  id: string;
-  name: string;
-  groupsId?: string[];
+  id: Id;
+  name: Id;
+  groupsId?: Id[];
+  teamsId?: Id[];
+  playOffs?: {
+    groupsId?: Id[];
+    gamesId?: Id[];
+  };
 };

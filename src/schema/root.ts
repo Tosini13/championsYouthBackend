@@ -1,18 +1,22 @@
 import {
   GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
 } from "graphql";
 import _ from "lodash";
-import { groupsMock } from "../mock/groups";
-import { matchesMock } from "../mock/matches";
-import { teamsMock } from "../mock/teams";
 import { tournamentsMock } from "../mock/tournaments";
-import { GroupType } from "./group";
-import { MatchType } from "./match";
-import { TeamType } from "./team";
-import { GetTournamentsType, GetTournamentType } from "./tournament";
+import { TournamentType } from "./tournament";
+
+export type TGetTournamentsParams = {
+  tournamentId?: string;
+  groupId?: string;
+  playOffsGroupId?: string;
+  gameId?: string;
+  teamId?: string;
+};
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
@@ -24,37 +28,22 @@ const RootQuery = new GraphQLObjectType({
       },
     },
     GetTournaments: {
-      type: GetTournamentsType,
-      resolve(_parent, _args) {
-        return tournamentsMock;
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(TournamentType))
+      ),
+      args: {
+        tournamentId: { type: GraphQLID, defaultValue: null },
+        groupId: { type: GraphQLID, defaultValue: null },
+        teamId: { type: GraphQLID, defaultValue: null },
       },
-    },
-    GetTournament: {
-      type: GetTournamentType,
-      args: { id: { type: GraphQLID } },
-      resolve(_parent, args) {
-        return _.find(tournamentsMock, { id: args.id });
-      },
-    },
-    group: {
-      type: GroupType,
-      args: { id: { type: GraphQLID } },
-      resolve(_parent, args) {
-        return _.find(groupsMock, { id: args.id });
-      },
-    },
-    match: {
-      type: MatchType,
-      args: { id: { type: GraphQLID } },
-      resolve(_parent, args) {
-        return _.find(matchesMock, { id: args.id });
-      },
-    },
-    team: {
-      type: TeamType,
-      args: { id: { type: GraphQLID } },
-      resolve(_parent, args) {
-        return _.find(teamsMock, { id: args.id });
+      resolve(_parent, args: TGetTournamentsParams) {
+        const response = args.tournamentId
+          ? [_.find(tournamentsMock, { id: args.tournamentId })]
+          : tournamentsMock;
+
+        return response.map((tournament) =>
+          Object.assign({}, tournament, args)
+        );
       },
     },
   },
